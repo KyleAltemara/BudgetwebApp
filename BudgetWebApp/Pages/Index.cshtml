@@ -23,7 +23,14 @@
     {
         <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Category!.Name)
+                    @if (item.Category != null)
+                    {
+                        @Html.DisplayFor(modelItem => item.Category.Name)
+                    }
+                    else
+                    {
+                        <span>No Category</span>
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Amount)
@@ -45,7 +52,7 @@
         <input type="hidden" asp-for="Transaction.Id" id="Transaction_Id" />
         <div class="form-group">
             <label asp-for="Transaction.Category"></label>
-            <select asp-for="Transaction.Category.Id" class="form-control" asp-items="Model.CategorySelectList" id="Transaction_Category"></select>
+            <select asp-for="Transaction.CategoryId" class="form-control" asp-items="Model.CategorySelectList" id="Transaction_Category"></select>
         </div>
         <div class="form-group">
             <label asp-for="Transaction.Amount"></label>
@@ -80,7 +87,7 @@
             }
 
             document.getElementById('Transaction_Id').value = transaction.id;
-            document.getElementById('Transaction_Category').value = transaction.category.id;
+            document.getElementById('Transaction_Category').value = transaction.categoryId;
             document.getElementById('Transaction_Amount').value = transaction.amount;
             document.getElementById('Transaction_Date').value = transaction.date;
 

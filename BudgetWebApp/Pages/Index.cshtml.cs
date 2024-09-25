@@ -48,7 +48,7 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
             return NotFound();
         }
 
-        transactionToUpdate.Category = await _context.Categories.FindAsync(Transaction.Category.Id);
+        transactionToUpdate.Category = await _context.Categories.FindAsync(Transaction.CategoryId);
         transactionToUpdate.Amount = Transaction.Amount;
         transactionToUpdate.Date = Transaction.Date;
 
