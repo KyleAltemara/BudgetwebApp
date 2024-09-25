@@ -13,7 +13,13 @@ public static class CategoryEndpoints
 
         group.MapGet("/", async (BudgetWebAppContext db) =>
         {
-            return await db.Categories.ToListAsync();
+            var categories = await db.Categories.ToListAsync();
+            foreach (var category in categories)
+            {
+                category.Transactions = await db.Transactions.Where(t => t.CategoryId == category.Id).ToListAsync();
+            }
+
+            return categories;
         })
         .WithName("GetAllCategories")
         .WithOpenApi();
@@ -38,7 +44,6 @@ public static class CategoryEndpoints
             var affected = await db.Categories
                 .Where(model => model.Id == id)
                 .ExecuteUpdateAsync(setters => setters
-                    .SetProperty(m => m.Id, category.Id)
                     .SetProperty(m => m.Name, category.Name)
                     );
             return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();

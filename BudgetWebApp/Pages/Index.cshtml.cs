@@ -20,6 +20,9 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
     [BindProperty]
     public Transaction Transaction { get; set; } = default!;
 
+    [BindProperty]
+    public string? NewCategoryName { get; set; }
+
     public SelectList CategorySelectList { get; set; } = default!;
 
     public async Task OnGetAsync()
@@ -39,6 +42,15 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
         if (!ModelState.IsValid)
         {
             return Page();
+        }
+
+        if (Transaction.CategoryId == -1 && !string.IsNullOrEmpty(NewCategoryName))
+        {
+            var newCategory = new Category { Name = NewCategoryName };
+            _context.Categories.Add(newCategory);
+            await _context.SaveChangesAsync();
+            newCategory = await _context.Categories.FirstAsync(c => c.Name == NewCategoryName);
+            Transaction.CategoryId = newCategory.Id;
         }
 
         var transactionToUpdate = await _context.Transactions.FindAsync(Transaction.Id);

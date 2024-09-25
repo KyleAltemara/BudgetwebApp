@@ -18,7 +18,6 @@ public static class TransactionEndpoints
         .WithName("GetAllTransactions")
         .WithOpenApi();
 
-
         group.MapGet("/{id}", async Task<Results<Ok<Transaction>, NotFound>> (int id, BudgetWebAppContext db) =>
         {
             var transaction = await db.Transactions.AsNoTracking()

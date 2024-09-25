@@ -20,8 +20,8 @@
     </thead>
     <tbody>
         @foreach (var item in Model.Transactions)
-    {
-        <tr>
+        {
+            <tr>
                 <td>
                     @if (item.Category != null)
                     {
@@ -43,7 +43,7 @@
                     <button type="button" class="btn btn-primary" onclick="deleteTransaction(@item.Id)">Delete</button>
                 </td>
             </tr>
-    }
+        }
     </tbody>
 </table>
 
@@ -52,7 +52,9 @@
         <input type="hidden" asp-for="Transaction.Id" id="Transaction_Id" />
         <div class="form-group">
             <label asp-for="Transaction.Category"></label>
-            <select asp-for="Transaction.CategoryId" class="form-control" asp-items="Model.CategorySelectList" id="Transaction_Category"></select>
+            <select asp-for="Transaction.CategoryId" class="form-control" asp-items="Model.CategorySelectList" id="Transaction_Category" onchange="handleCategoryChange(this)">
+            </select>
+            <input type="text" id="NewCategoryName" name="NewCategoryName" class="form-control" style="display:none;" placeholder="Enter new category name" />
         </div>
         <div class="form-group">
             <label asp-for="Transaction.Amount"></label>
@@ -108,6 +110,15 @@
             }
 
             location.reload();
+        }
+
+        function handleCategoryChange(selectElement) {
+            const newCategoryInput = document.getElementById('NewCategoryName');
+            if (selectElement.value == -1) {
+                newCategoryInput.style.display = 'block';
+            } else {
+                newCategoryInput.style.display = 'none';
+            }
         }
     </script>
 }
