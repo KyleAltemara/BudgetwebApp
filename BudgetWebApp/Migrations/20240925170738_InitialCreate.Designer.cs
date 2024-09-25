@@ -9,76 +9,75 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BudgetWebApp.Migrations
+namespace BudgetWebApp.Migrations;
+
+[DbContext(typeof(BudgetWebAppContext))]
+[Migration("20240925170738_InitialCreate")]
+partial class InitialCreate
 {
-    [DbContext(typeof(BudgetWebAppContext))]
-    [Migration("20240925170738_InitialCreate")]
-    partial class InitialCreate
+    /// <inheritdoc />
+    protected override void BuildTargetModel(ModelBuilder modelBuilder)
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
-        {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+        modelBuilder
+            .HasAnnotation("ProductVersion", "8.0.8")
+            .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+        SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BudgetWebApp.Models.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("BudgetWebApp.Models.Category", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("Categories");
-                });
+                b.ToTable("Categories");
+            });
 
-            modelBuilder.Entity("BudgetWebApp.Models.Transaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("BudgetWebApp.Models.Transaction", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
+                b.Property<double>("Amount")
+                    .HasColumnType("float");
 
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
+                b.Property<int?>("CategoryId")
+                    .HasColumnType("int");
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                b.Property<DateOnly>("Date")
+                    .HasColumnType("date");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                b.HasIndex("CategoryId");
 
-                    b.ToTable("Transactions");
-                });
+                b.ToTable("Transactions");
+            });
 
-            modelBuilder.Entity("BudgetWebApp.Models.Transaction", b =>
-                {
-                    b.HasOne("BudgetWebApp.Models.Category", "Category")
-                        .WithMany("Transactions")
-                        .HasForeignKey("CategoryId");
+        modelBuilder.Entity("BudgetWebApp.Models.Transaction", b =>
+            {
+                b.HasOne("BudgetWebApp.Models.Category", "Category")
+                    .WithMany("Transactions")
+                    .HasForeignKey("CategoryId");
 
-                    b.Navigation("Category");
-                });
+                b.Navigation("Category");
+            });
 
-            modelBuilder.Entity("BudgetWebApp.Models.Category", b =>
-                {
-                    b.Navigation("Transactions");
-                });
+        modelBuilder.Entity("BudgetWebApp.Models.Category", b =>
+            {
+                b.Navigation("Transactions");
+            });
 #pragma warning restore 612, 618
-        }
     }
 }

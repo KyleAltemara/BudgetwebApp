@@ -20,8 +20,8 @@
     </thead>
     <tbody>
         @foreach (var item in Model.Transactions)
-        {
-            <tr>
+    {
+        <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Category!.Name)
                 </td>
@@ -36,7 +36,7 @@
                     <button type="button" class="btn btn-primary" onclick="deleteTransaction(@item.Id)">Delete</button>
                 </td>
             </tr>
-        }
+    }
     </tbody>
 </table>
 
