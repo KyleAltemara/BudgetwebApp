@@ -1,7 +1,7 @@
-﻿using BudgetWebApp.Data;
+﻿using BudgetWebApp.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BudgetWebApp.Models
+namespace BudgetWebApp.Data
 {
     public static class SeedData
     {

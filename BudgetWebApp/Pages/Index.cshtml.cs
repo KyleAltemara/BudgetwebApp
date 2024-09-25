@@ -1,6 +1,8 @@
 using BudgetWebApp.Data;
 using BudgetWebApp.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace BudgetWebApp.Pages;
@@ -15,14 +17,43 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
 
     public IList<Category> Categories { get; set; } = default!;
 
-    public async void OnGet()
-    {
-        var transactions = from t in _context.Transactions
-                           select t;
-        Transactions = await transactions.ToListAsync();
+    [BindProperty]
+    public Transaction Transaction { get; set; } = default!;
 
-        var categories = from c in _context.Categories
-                         select c;
-        Categories = await categories.ToListAsync();
+    public SelectList CategorySelectList { get; set; } = default!;
+
+    public async Task OnGetAsync()
+    {
+        Transactions = await _context.Transactions.Include(t => t.Category).ToListAsync();
+        var Categories = await _context.Categories.ToListAsync();
+        var tempCategories = new List<Category>(Categories)
+        {
+            new() { Id = -1, Name = "Add new category" }
+        };
+
+        CategorySelectList = new SelectList(tempCategories, "Id", "Name");
+    }
+
+    public async Task<IActionResult> OnPostAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+
+        var transactionToUpdate = await _context.Transactions.FindAsync(Transaction.Id);
+
+        if (transactionToUpdate == null)
+        {
+            return NotFound();
+        }
+
+        transactionToUpdate.Category = await _context.Categories.FindAsync(Transaction.Category.Id);
+        transactionToUpdate.Amount = Transaction.Amount;
+        transactionToUpdate.Date = Transaction.Date;
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToPage();
     }
 }

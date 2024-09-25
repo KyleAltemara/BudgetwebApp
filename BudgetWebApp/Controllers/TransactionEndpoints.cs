@@ -18,13 +18,18 @@ public static class TransactionEndpoints
         .WithName("GetAllTransactions")
         .WithOpenApi();
 
+
         group.MapGet("/{id}", async Task<Results<Ok<Transaction>, NotFound>> (int id, BudgetWebAppContext db) =>
         {
-            return await db.Transactions.AsNoTracking()
-                .FirstOrDefaultAsync(model => model.Id == id)
-                is Transaction model
-                    ? TypedResults.Ok(model)
-                    : TypedResults.NotFound();
+            var transaction = await db.Transactions.AsNoTracking()
+                .FirstOrDefaultAsync(model => model.Id == id);
+            if (transaction == null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            transaction.Category = await db.Categories.FindAsync(transaction.CategoryId);
+            return TypedResults.Ok(transaction);
         })
         .WithName("GetTransactionById")
         .WithOpenApi();

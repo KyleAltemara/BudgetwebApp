@@ -16,6 +16,7 @@
             <th>
                 <a asp-page="./Index">@Html.DisplayNameFor(model => model.Transactions[0].Date)</a>
             </th>
+            <th>Actions</th>
     </thead>
     <tbody>
         @foreach (var item in Model.Transactions)
@@ -30,8 +31,76 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Date)
                 </td>
+                <td>
+                    <button type="button" class="btn btn-primary" onclick="showEditForm(@item.Id)">Edit</button>
+                    <button type="button" class="btn btn-primary" onclick="deleteTransaction(@item.Id)">Delete</button>
+                </td>
             </tr>
         }
     </tbody>
 </table>
 
+<div id="editForm" style="display:none;">
+    <form method="post">
+        <input type="hidden" asp-for="Transaction.Id" id="Transaction_Id" />
+        <div class="form-group">
+            <label asp-for="Transaction.Category"></label>
+            <select asp-for="Transaction.Category.Id" class="form-control" asp-items="Model.CategorySelectList" id="Transaction_Category"></select>
+        </div>
+        <div class="form-group">
+            <label asp-for="Transaction.Amount"></label>
+            <input asp-for="Transaction.Amount" class="form-control" id="Transaction_Amount" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Transaction.Date"></label>
+            <input asp-for="Transaction.Date" class="form-control" id="Transaction_Date" type="date" />
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        async function showEditForm(id) {
+            const response = await fetch(`/api/Transaction/${id}`);
+            if (!response.ok) {
+                console.error("Transaction not found");
+                return;
+            }
+
+            const transaction = await response.json();
+            if (!transaction || !transaction.id) {
+                console.error("Invalid transaction data");
+                return;
+            }
+
+            if (!transaction.category || !transaction.category.id) {
+                console.error("Invalid category data");
+                return;
+            }
+
+            document.getElementById('Transaction_Id').value = transaction.id;
+            document.getElementById('Transaction_Category').value = transaction.category.id;
+            document.getElementById('Transaction_Amount').value = transaction.amount;
+            document.getElementById('Transaction_Date').value = transaction.date;
+
+            document.getElementById('editForm').style.display = 'block';
+        }
+
+        async function deleteTransaction(id) {
+            if (!confirm("Are you sure you want to delete this transaction?")) {
+                return;
+            }
+
+            const response = await fetch(`/api/Transaction/${id}`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) {
+                console.error("Transaction not found");
+                return;
+            }
+
+            location.reload();
+        }
+    </script>
+}

@@ -7,7 +7,7 @@ namespace BudgetWebApp.Controllers;
 
 public static class CategoryEndpoints
 {
-    public static void MapCategoryEndpoints (this IEndpointRouteBuilder routes)
+    public static void MapCategoryEndpoints(this IEndpointRouteBuilder routes)
     {
         var group = routes.MapGroup("/api/Category").WithTags(nameof(Category));
 
@@ -20,11 +20,15 @@ public static class CategoryEndpoints
 
         group.MapGet("/{id}", async Task<Results<Ok<Category>, NotFound>> (int id, BudgetWebAppContext db) =>
         {
-            return await db.Categories.AsNoTracking()
-                .FirstOrDefaultAsync(model => model.Id == id)
-                is Category model
-                    ? TypedResults.Ok(model)
-                    : TypedResults.NotFound();
+            var category = await db.Categories.AsNoTracking()
+                .FirstOrDefaultAsync(model => model.Id == id);
+            if (category == null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            category.Transactions = await db.Transactions.Where(t => t.CategoryId == category.Id).ToListAsync();
+            return TypedResults.Ok(category);
         })
         .WithName("GetCategoryById")
         .WithOpenApi();
@@ -46,7 +50,7 @@ public static class CategoryEndpoints
         {
             db.Categories.Add(category);
             await db.SaveChangesAsync();
-            return TypedResults.Created($"/api/Category/{category.Id}",category);
+            return TypedResults.Created($"/api/Category/{category.Id}", category);
         })
         .WithName("CreateCategory")
         .WithOpenApi();

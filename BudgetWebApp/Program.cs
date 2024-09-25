@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BudgetWebApp.Data;
 using BudgetWebApp.Controllers;
-using BudgetWebApp.Models;
 
 namespace BudgetWebApp;
 
