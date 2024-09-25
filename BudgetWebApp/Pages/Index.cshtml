@@ -1,0 +1,37 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-page="./Index">@Html.DisplayNameFor(model => model.Transactions[0].Category)</a>
+            </th>
+            <th>
+                <a asp-page="./Index">@Html.DisplayNameFor(model => model.Transactions[0].Amount)</a>
+            </th>
+            <th>
+                <a asp-page="./Index">@Html.DisplayNameFor(model => model.Transactions[0].Date)</a>
+            </th>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Transactions)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category!.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
