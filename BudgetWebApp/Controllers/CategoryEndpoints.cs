@@ -62,9 +62,11 @@ public static class CategoryEndpoints
 
         group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (int id, BudgetWebAppContext db) =>
         {
-            var affected = await db.Categories
-                .Where(model => model.Id == id)
-                .ExecuteDeleteAsync();
+            var category = db.Categories.Where(model => model.Id == id);
+            var transactions = await db.Transactions.Where(t => t.CategoryId == id).ToListAsync();
+            db.RemoveRange(transactions);
+            await db.SaveChangesAsync();
+            var affected = await category.ExecuteDeleteAsync();
             return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
         })
         .WithName("DeleteCategory")

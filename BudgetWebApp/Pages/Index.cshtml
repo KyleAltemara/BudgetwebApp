@@ -4,7 +4,7 @@
     ViewData["Title"] = "Home page";
 }
 
-<table class="table">
+<table class="transactionsTable">
     <thead>
         <tr>
             <th>
@@ -30,8 +30,8 @@
             @foreach (var item in Model.Transactions)
             {
                 <tr>
-                    <td>
-                        @if (item.Category != null)
+                    <td class="transaction-category-@item.CategoryId">
+                    @if (item.Category != null)
                         {
                             @Html.DisplayFor(modelItem => item.Category.Name)
                         }
@@ -56,6 +56,44 @@
     </tbody>
 </table>
 
+<a class="editCategoriesLink" onclick="showCategoriesTable()" style="display:inline">Edit Categories</a>
+<a class="hideCategoriesLink" onclick="hideCategoriesTable()" style="display:none">Hide Categories</a>
+
+<table class="categoriesTable" style="display:none">
+    <thead>
+        <tr>
+            <th>
+                <a asp-page="./Index">@Html.DisplayNameFor(model => model.Categories[0].Name)</a>
+            </th>
+            <th>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Categories == null || Model.Categories.Count == 0)
+        {
+            <tr>
+                <td colspan="2">No categories found</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in Model.Categories)
+            {
+                <tr>
+                    <td onclick="editCategoryName(this, @item.Id)">
+                        <span>@Html.DisplayFor(modelItem => item.Name)</span>
+                        <input type="text" value="@item.Name" style="display:none;" onblur="saveCategoryName(this, @item.Id)" onkeydown="handleEnterKey(event, this, @item.Id)" />
+                    </td>
+
+                    <td>
+                        <button type="button" class="btn btn-primary" onclick="deleteCategory(@item.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
 
 <div id="addForm" style="display:block;" class="form-width-one-third">
     <form method="post">
@@ -128,6 +166,7 @@
             document.getElementById('Edit_Transaction_Amount').value = transaction.amount;
             document.getElementById('Edit_Transaction_Date').value = transaction.date;
 
+            hideCategoriesTable();
             document.getElementById('editForm').style.display = 'block';
             document.getElementById('addForm').style.display = 'none';
         }
@@ -161,5 +200,79 @@
                 newCategoryInput.style.display = 'none';
             }
         }
+
+        function showCategoriesTable() {
+            document.querySelector('.categoriesTable').style.display = 'table';
+            document.querySelector('.editCategoriesLink').style.display = 'none';
+            document.querySelector('.hideCategoriesLink').style.display = 'inline';
+            document.getElementById('editForm').style.display = 'none';
+            document.getElementById('addForm').style.display = 'none';
+        }
+
+        function hideCategoriesTable() {
+            document.querySelector('.categoriesTable').style.display = 'none';
+            document.querySelector('.editCategoriesLink').style.display = 'inline';
+            document.querySelector('.hideCategoriesLink').style.display = 'none';
+            document.getElementById('editForm').style.display = 'none';
+            document.getElementById('addForm').style.display = 'block';
+        }
+
+        function editCategoryName(td, categoryId) {
+            const span = td.querySelector('span');
+            const input = td.querySelector('input');
+            span.style.display = 'none';
+            input.style.display = 'block';
+            input.focus();
+        }
+
+        async function saveCategoryName(input, categoryId) {
+            const newName = input.value;
+            const response = await fetch(`/api/Category/${categoryId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: newName })
+            });
+
+            if (!response.ok) {
+                console.error("Failed to update category");
+                return;
+            }
+
+            localStorage.setItem('showCategoriesTable', 'true');
+            location.reload();
+        }
+
+        function handleEnterKey(event, input, categoryId) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                saveCategoryName(input, categoryId);
+            }
+        }
+
+        async function deleteCategory(id) {
+            if (!confirm("Are you sure you want to delete this category?")) {
+                return;
+            }
+
+            const response = await fetch(`/api/Category/${id}`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) {
+                console.error("Category not found");
+                return;
+            }
+
+            localStorage.setItem('showCategoriesTable', 'true');
+            location.reload();
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            if (localStorage.getItem('showCategoriesTable') === 'true') {
+                showCategoriesTable();
+                localStorage.removeItem('showCategoriesTable');
+            }
+        });
     </script>
 }
