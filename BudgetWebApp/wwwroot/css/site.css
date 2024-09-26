@@ -20,3 +20,8 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.form-width-one-third {
+    width: 33.33%;
+    margin: 0 auto; /* Center the form */
+}

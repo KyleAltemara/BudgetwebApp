@@ -4,28 +4,6 @@
     ViewData["Title"] = "Home page";
 }
 
-<div id="addForm">
-    <form accept-charset="utf-8" method="post">
-        <div class="form-group">
-            <input type="hidden" asp-for="AddTransaction.Id" />
-            <label asp-for="AddTransaction.CategoryId"></label>
-            <select asp-for="AddTransaction.CategoryId" class="form-control" asp-items="Model.CategorySelectList" onchange="handleCategoryChange(this)">
-                <option value="-2">Select the Category</option>
-            </select>
-            <input type="text" id="NewCategoryName" name="NewCategoryName" class="form-control" style="display:none;" placeholder="Enter new category name" />
-        </div>
-        <div class="form-group">
-            <label asp-for="AddTransaction.Amount"></label>
-            <input asp-for="AddTransaction.Amount" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label asp-for="AddTransaction.Date"></label>
-            <input asp-for="AddTransaction.Date" class="form-control" type="date" />
-        </div>
-        <button type="submit" class="btn btn-primary">Add Transaction</button>
-    </form>
-</div>
-
 <table class="table">
     <thead>
         <tr>
@@ -78,7 +56,30 @@
     </tbody>
 </table>
 
-<div id="editForm" style="display:none;">
+
+<div id="addForm" style="display:block;" class="form-width-one-third">
+    <form accept-charset="utf-8" method="post">
+        <div class="form-group">
+            <input type="hidden" asp-for="AddTransaction.Id" />
+            <label asp-for="AddTransaction.Category"></label>
+            <select asp-for="AddTransaction.CategoryId" class="form-control" asp-items="Model.CategorySelectList" onchange="handleCategoryChange(this)">
+                <option value="-2">Select the Category</option>
+            </select>
+            <input type="text" id="NewCategoryName" name="NewCategoryName" class="form-control" style="display:none;" placeholder="Enter new category name" />
+        </div>
+        <div class="form-group">
+            <label asp-for="AddTransaction.Amount"></label>
+            <input asp-for="AddTransaction.Amount" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="AddTransaction.Date"></label>
+            <input asp-for="AddTransaction.Date" class="form-control" type="date" />
+        </div>
+        <button type="submit" class="btn btn-primary">Add Transaction</button>
+    </form>
+</div>
+
+<div id="editForm" style="display:none;" class="form-width-one-third">
     <form method="put">
         <input type="hidden" asp-for="EditTransaction.Id" id="Edit_Transaction_Id" />
         <div class="form-group">
@@ -126,6 +127,7 @@
             document.getElementById('Edit_Transaction_Date').value = transaction.date;
 
             document.getElementById('editForm').style.display = 'block';
+            document.getElementById('addForm').style.display = 'none';
         }
 
         async function deleteTransaction(id) {
@@ -146,6 +148,7 @@
 
         function hideEditForm() {
             document.getElementById('editForm').style.display = 'none';
+            document.getElementById('addForm').style.display = 'block';
         }
 
         function handleCategoryChange(selectElement) {
