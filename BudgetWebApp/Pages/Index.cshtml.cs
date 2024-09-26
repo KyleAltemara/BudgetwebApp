@@ -17,53 +17,89 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
 
     public IList<Category> Categories { get; set; } = default!;
 
+    public SelectList CategorySelectList { get; set; } = default!;
+
     [BindProperty]
-    public Transaction Transaction { get; set; } = default!;
+    public Transaction AddTransaction { get; set; } = default!;
+
+    [BindProperty]
+    public Transaction EditTransaction { get; set; } = default!;
 
     [BindProperty]
     public string? NewCategoryName { get; set; }
 
-    public SelectList CategorySelectList { get; set; } = default!;
-
     public async Task OnGetAsync()
     {
         Transactions = await _context.Transactions.Include(t => t.Category).ToListAsync();
-        var Categories = await _context.Categories.ToListAsync();
+        Categories = await _context.Categories.ToListAsync();
         var tempCategories = new List<Category>(Categories)
         {
             new() { Id = -1, Name = "Add new category" }
         };
 
         CategorySelectList = new SelectList(tempCategories, "Id", "Name");
+        _logger.LogInformation("Transactions and Categories loaded");
     }
 
     public async Task<IActionResult> OnPostAsync()
+    {
+        ModelState.Remove("AddTransaction.Id");
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+
+        if (AddTransaction.CategoryId == -1 && !string.IsNullOrEmpty(NewCategoryName))
+        {
+            var newCategory = new Category { Name = NewCategoryName };
+            _context.Categories.Add(newCategory);
+            await _context.SaveChangesAsync();
+            newCategory = await _context.Categories.FirstAsync(c => c.Name == NewCategoryName);
+            AddTransaction.CategoryId = newCategory.Id;
+        }
+
+        var transactionToAdd = new Transaction
+        {
+            Category = await _context.Categories.FindAsync(AddTransaction.CategoryId),
+            Amount = AddTransaction.Amount,
+            Date = AddTransaction.Date
+        };
+
+        _context.Transactions.Add(transactionToAdd);
+        await _context.SaveChangesAsync();
+        _logger.LogInformation($"Transaction added: Category: {transactionToAdd.Category?.Name}, Amount: {transactionToAdd.Amount}, Date: {transactionToAdd.Date}");
+        AddTransaction = transactionToAdd;
+
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPutAsync()
     {
         if (!ModelState.IsValid)
         {
             return Page();
         }
 
-        if (Transaction.CategoryId == -1 && !string.IsNullOrEmpty(NewCategoryName))
+        if (EditTransaction.CategoryId == -1 && !string.IsNullOrEmpty(NewCategoryName))
         {
             var newCategory = new Category { Name = NewCategoryName };
             _context.Categories.Add(newCategory);
             await _context.SaveChangesAsync();
             newCategory = await _context.Categories.FirstAsync(c => c.Name == NewCategoryName);
-            Transaction.CategoryId = newCategory.Id;
+            EditTransaction.CategoryId = newCategory.Id;
         }
 
-        var transactionToUpdate = await _context.Transactions.FindAsync(Transaction.Id);
+        var transactionToUpdate = await _context.Transactions.FindAsync(EditTransaction.Id);
 
         if (transactionToUpdate == null)
         {
             return NotFound();
         }
 
-        transactionToUpdate.Category = await _context.Categories.FindAsync(Transaction.CategoryId);
-        transactionToUpdate.Amount = Transaction.Amount;
-        transactionToUpdate.Date = Transaction.Date;
-
+        transactionToUpdate.Category = await _context.Categories.FindAsync(EditTransaction.CategoryId);
+        transactionToUpdate.Amount = EditTransaction.Amount;
+        transactionToUpdate.Date = EditTransaction.Date;
+        _logger.LogInformation($"Transaction updated: Category: {transactionToUpdate.Category?.Name}, Amount: {transactionToUpdate.Amount}, Date: {transactionToUpdate.Date}");
         await _context.SaveChangesAsync();
 
         return RedirectToPage();

@@ -4,6 +4,28 @@
     ViewData["Title"] = "Home page";
 }
 
+<div id="addForm">
+    <form accept-charset="utf-8" method="post">
+        <div class="form-group">
+            <input type="hidden" asp-for="AddTransaction.Id" />
+            <label asp-for="AddTransaction.CategoryId"></label>
+            <select asp-for="AddTransaction.CategoryId" class="form-control" asp-items="Model.CategorySelectList" onchange="handleCategoryChange(this)">
+                <option value="-2">Select the Category</option>
+            </select>
+            <input type="text" id="NewCategoryName" name="NewCategoryName" class="form-control" style="display:none;" placeholder="Enter new category name" />
+        </div>
+        <div class="form-group">
+            <label asp-for="AddTransaction.Amount"></label>
+            <input asp-for="AddTransaction.Amount" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="AddTransaction.Date"></label>
+            <input asp-for="AddTransaction.Date" class="form-control" type="date" />
+        </div>
+        <button type="submit" class="btn btn-primary">Add Transaction</button>
+    </form>
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -19,52 +41,62 @@
             <th>Actions</th>
     </thead>
     <tbody>
-        @foreach (var item in Model.Transactions)
+        @if (Model.Transactions == null || Model.Transactions.Count == 0)
         {
             <tr>
-                <td>
-                    @if (item.Category != null)
-                    {
-                        @Html.DisplayFor(modelItem => item.Category.Name)
-                    }
-                    else
-                    {
-                        <span>No Category</span>
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Amount)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Date)
-                </td>
-                <td>
-                    <button type="button" class="btn btn-primary" onclick="showEditForm(@item.Id)">Edit</button>
-                    <button type="button" class="btn btn-primary" onclick="deleteTransaction(@item.Id)">Delete</button>
-                </td>
+                <td colspan="4">No transactions found</td>
             </tr>
+        }
+        else
+        {
+            @foreach (var item in Model.Transactions)
+            {
+                <tr>
+                    <td>
+                        @if (item.Category != null)
+                        {
+                            @Html.DisplayFor(modelItem => item.Category.Name)
+                        }
+                        else
+                        {
+                            <span>No Category</span>
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-primary" onclick="showEditForm(@item.Id)">Edit</button>
+                        <button type="button" class="btn btn-primary" onclick="deleteTransaction(@item.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>
 
 <div id="editForm" style="display:none;">
-    <form method="post">
-        <input type="hidden" asp-for="Transaction.Id" id="Transaction_Id" />
+    <form method="put">
+        <input type="hidden" asp-for="EditTransaction.Id" id="Edit_Transaction_Id" />
         <div class="form-group">
-            <label asp-for="Transaction.Category"></label>
-            <select asp-for="Transaction.CategoryId" class="form-control" asp-items="Model.CategorySelectList" id="Transaction_Category" onchange="handleCategoryChange(this)">
+            <label asp-for="EditTransaction.Category"></label>
+            <select asp-for="EditTransaction.CategoryId" class="form-control" asp-items="Model.CategorySelectList" id="Edit_Transaction_Category" onchange="handleCategoryChange(this)">
             </select>
             <input type="text" id="NewCategoryName" name="NewCategoryName" class="form-control" style="display:none;" placeholder="Enter new category name" />
         </div>
         <div class="form-group">
-            <label asp-for="Transaction.Amount"></label>
-            <input asp-for="Transaction.Amount" class="form-control" id="Transaction_Amount" />
+            <label asp-for="EditTransaction.Amount"></label>
+            <input asp-for="EditTransaction.Amount" class="form-control" id="Edit_Transaction_Amount" />
         </div>
         <div class="form-group">
-            <label asp-for="Transaction.Date"></label>
-            <input asp-for="Transaction.Date" class="form-control" id="Transaction_Date" type="date" />
+            <label asp-for="EditTransaction.Date"></label>
+            <input asp-for="EditTransaction.Date" class="form-control" id="Edit_Transaction_Date" type="date" />
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" onclick="hideEditForm()">Cancel</button>
     </form>
 </div>
 
@@ -88,10 +120,10 @@
                 return;
             }
 
-            document.getElementById('Transaction_Id').value = transaction.id;
-            document.getElementById('Transaction_Category').value = transaction.categoryId;
-            document.getElementById('Transaction_Amount').value = transaction.amount;
-            document.getElementById('Transaction_Date').value = transaction.date;
+            document.getElementById('Edit_Transaction_Id').value = transaction.id;
+            document.getElementById('Edit_Transaction_Category').value = transaction.categoryId;
+            document.getElementById('Edit_Transaction_Amount').value = transaction.amount;
+            document.getElementById('Edit_Transaction_Date').value = transaction.date;
 
             document.getElementById('editForm').style.display = 'block';
         }
@@ -110,6 +142,10 @@
             }
 
             location.reload();
+        }
+
+        function hideEditForm() {
+            document.getElementById('editForm').style.display = 'none';
         }
 
         function handleCategoryChange(selectElement) {
