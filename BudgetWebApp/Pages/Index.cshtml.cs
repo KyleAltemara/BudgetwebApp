@@ -43,6 +43,11 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
 
     public async Task<IActionResult> OnPostAsync()
     {
+        if (Request.Form["_method"] == "PUT")
+        {
+            return await OnPutAsync();
+        }
+
         ModelState.Remove("AddTransaction.Id");
         if (!ModelState.IsValid)
         {

@@ -58,7 +58,8 @@
 
 
 <div id="addForm" style="display:block;" class="form-width-one-third">
-    <form accept-charset="utf-8" method="post">
+    <form method="post">
+        <input type="hidden" name="_method" value="POST" />
         <div class="form-group">
             <input type="hidden" asp-for="AddTransaction.Id" />
             <label asp-for="AddTransaction.Category"></label>
@@ -80,7 +81,8 @@
 </div>
 
 <div id="editForm" style="display:none;" class="form-width-one-third">
-    <form method="put">
+    <form method="post">
+        <input type="hidden" name="_method" value="PUT" />
         <input type="hidden" asp-for="EditTransaction.Id" id="Edit_Transaction_Id" />
         <div class="form-group">
             <label asp-for="EditTransaction.Category"></label>
