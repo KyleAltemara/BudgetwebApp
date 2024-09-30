@@ -43,7 +43,7 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
 
         if (!string.IsNullOrEmpty(SearchString))
         {
-            transactions = transactions.Where(s => s.Category.Name.Contains(SearchString));
+            transactions = transactions.Where(s => s.Name.Contains(SearchString));
         }
 
         transactions = SortOrder switch
@@ -54,6 +54,8 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
             "amount_desc" => transactions.OrderByDescending(s => s.Amount),
             "date_asc" => transactions.OrderBy(s => s.Date),
             "date_desc" => transactions.OrderByDescending(s => s.Date),
+            "name_asc" => transactions.OrderBy(s => s.Name),
+            "name_desc" => transactions.OrderByDescending(s => s.Name),
             _ => throw new Exception()
         };
 
@@ -93,6 +95,7 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
 
         var transactionToAdd = new Transaction
         {
+            Name = AddTransaction.Name,
             Category = await _context.Categories.FindAsync(AddTransaction.CategoryId),
             Amount = AddTransaction.Amount,
             Date = AddTransaction.Date
@@ -129,10 +132,11 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
             return NotFound();
         }
 
+        transactionToUpdate.Name = EditTransaction.Name;
         transactionToUpdate.Category = await _context.Categories.FindAsync(EditTransaction.CategoryId);
         transactionToUpdate.Amount = EditTransaction.Amount;
         transactionToUpdate.Date = EditTransaction.Date;
-        _logger.LogInformation($"Transaction updated: Category: {transactionToUpdate.Category?.Name}, Amount: {transactionToUpdate.Amount}, Date: {transactionToUpdate.Date}");
+        _logger.LogInformation($"Transaction updated: Name: {transactionToUpdate.Name}, Category: {transactionToUpdate.Category?.Name}, Amount: {transactionToUpdate.Amount}, Date: {transactionToUpdate.Date}");
         await _context.SaveChangesAsync();
 
         return RedirectToPage();

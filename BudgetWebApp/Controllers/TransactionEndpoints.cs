@@ -38,6 +38,7 @@ public static class TransactionEndpoints
             var affected = await db.Transactions
                 .Where(model => model.Id == id)
                 .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(m => m.Name, transaction.Name)
                     .SetProperty(m => m.Amount, transaction.Amount)
                     .SetProperty(m => m.Date, transaction.Date)
                     .SetProperty(m => m.CategoryId, transaction.CategoryId)
