@@ -28,9 +28,27 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
     [BindProperty]
     public string? NewCategoryName { get; set; }
 
+    [BindProperty(SupportsGet = true)]
+    public string SortOrder { get; set; } = "date_desc";
+
     public async Task OnGetAsync()
     {
-        Transactions = await _context.Transactions.Include(t => t.Category).ToListAsync();
+
+        var transactions = from m in _context.Transactions
+                           select m;
+
+        transactions = SortOrder switch
+        {
+            "category_asc" => transactions.OrderBy(s => s.Category.Name),
+            "category_desc" => transactions.OrderByDescending(s => s.Category.Name),
+            "amount_asc" => transactions.OrderBy(s => s.Amount),
+            "amount_desc" => transactions.OrderByDescending(s => s.Amount),
+            "date_asc" => transactions.OrderBy(s => s.Date),
+            "date_desc" => transactions.OrderByDescending(s => s.Date),
+            _ => throw new Exception()
+        };
+
+        Transactions = await transactions.ToListAsync();
         Categories = await _context.Categories.ToListAsync();
         var tempCategories = new List<Category>(Categories)
         {
@@ -38,6 +56,7 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
         };
 
         CategorySelectList = new SelectList(tempCategories, "Id", "Name");
+
         _logger.LogInformation("Transactions and Categories loaded");
     }
 

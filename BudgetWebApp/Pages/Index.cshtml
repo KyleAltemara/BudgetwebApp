@@ -8,13 +8,43 @@
     <thead>
         <tr>
             <th>
-                <a asp-page="./Index">@Html.DisplayNameFor(model => model.Transactions[0].Category)</a>
+                <a asp-page="./Index" asp-route-sortOrder="@(Model.SortOrder == "category_asc" ? "category_desc" : "category_asc")">
+                    @Html.DisplayNameFor(model => model.Transactions[0].Category)
+                    @if (Model.SortOrder == "category_asc")
+                    {
+                        <span>&#9650;</span>
+                    }
+                    else if (Model.SortOrder == "category_desc")
+                    {
+                        <span>&#9660;</span>
+                    }
+                </a>
             </th>
             <th>
-                <a asp-page="./Index">@Html.DisplayNameFor(model => model.Transactions[0].Amount)</a>
+                <a asp-page="./Index" asp-route-sortOrder="@(Model.SortOrder == "amount_asc" ? "amount_desc" : "amount_asc")">
+                    @Html.DisplayNameFor(model => model.Transactions[0].Amount)
+                    @if (Model.SortOrder == "amount_asc")
+                    {
+                        <span>&#9650;</span>
+                    }
+                    else if (Model.SortOrder == "amount_desc")
+                    {
+                        <span>&#9660;</span>
+                    }
+                </a>
             </th>
             <th>
-                <a asp-page="./Index">@Html.DisplayNameFor(model => model.Transactions[0].Date)</a>
+                <a asp-page="./Index" asp-route-sortOrder="@(Model.SortOrder == "date_asc" ? "date_desc" : "date_asc")">
+                    @Html.DisplayNameFor(model => model.Transactions[0].Date)
+                    @if (Model.SortOrder == "date_asc")
+                    {
+                        <span>&#9650;</span>
+                    }
+                    else if (Model.SortOrder == "date_desc")
+                    {
+                        <span>&#9660;</span>
+                    }
+                </a>
             </th>
             <th>Actions</th>
     </thead>

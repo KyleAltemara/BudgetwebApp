@@ -32,7 +32,7 @@ public static class SeedData
             new Transaction
             {
                 Amount = 100.00,
-                Date = DateOnly.Parse(DateTime.Today.AddDays(-1).ToLongDateString()),
+                Date = DateOnly.Parse(DateTime.Today.AddDays(-2).ToLongDateString()),
                 Category = categories[0]
             },
             new Transaction
@@ -44,7 +44,7 @@ public static class SeedData
             new Transaction
             {
                 Amount = 75.00,
-                Date = DateOnly.Parse(DateTime.Today.AddDays(-1).ToLongDateString()),
+                Date = DateOnly.Parse(DateTime.Today.AddDays(0).ToLongDateString()),
                 Category = categories[2]
             },
             ]);
