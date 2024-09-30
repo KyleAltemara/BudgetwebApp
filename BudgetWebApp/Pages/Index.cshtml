@@ -4,6 +4,16 @@
     ViewData["Title"] = "Home page";
 }
 
+<form method="get">
+    <p>
+        Search Transactions: <input type="text" name="SearchString" value="@Model.SearchString" />
+        @if (Model.SearchString != null)
+        {
+            <a asp-page="./Index">Clear search</a>
+        }
+    </p>
+</form>
+
 <table class="transactionsTable">
     <thead>
         <tr>

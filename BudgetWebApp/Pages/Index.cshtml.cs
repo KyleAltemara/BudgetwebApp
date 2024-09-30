@@ -31,11 +31,20 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
     [BindProperty(SupportsGet = true)]
     public string SortOrder { get; set; } = "date_desc";
 
+
+    [BindProperty(SupportsGet = true)]
+    public string? SearchString { get; set; }
+
     public async Task OnGetAsync()
     {
 
         var transactions = from m in _context.Transactions
                            select m;
+
+        if (!string.IsNullOrEmpty(SearchString))
+        {
+            transactions = transactions.Where(s => s.Category.Name.Contains(SearchString));
+        }
 
         transactions = SortOrder switch
         {
