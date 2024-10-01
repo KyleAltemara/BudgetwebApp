@@ -10,10 +10,6 @@ public static class SeedData
         using var context = new BudgetWebAppContext(serviceProvider.GetRequiredService<DbContextOptions<BudgetWebAppContext>>()) ??
             throw new ArgumentNullException(nameof(serviceProvider), $"Null {typeof(BudgetWebAppContext)}");
 
-        context.Categories?.RemoveRange(context.Categories);
-        context.Transactions?.RemoveRange(context.Transactions);
-        context.SaveChanges();
-
         // Look for any Transactions.
         if (context.Categories?.Any() ?? throw new ArgumentNullException(nameof(serviceProvider), "Null Categories property"))
         {
