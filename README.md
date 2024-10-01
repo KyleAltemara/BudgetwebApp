@@ -49,4 +49,6 @@ This project is licensed under the MIT License.
 - [The C# Academy](https://www.thecsharpacademy.com/)
 - [Microsoft Docs: Minimal APIs](https://learn.microsoft.com/en-us/aspnet/core/tutorials/min-web-api?view=aspnetcore-8.0&tabs=visual-studio)
 - [Microsoft Docs: Calling a Web API in JavaScript](https://learn.microsoft.com/en-us/aspnet/core/tutorials/web-api-javascript?view=aspnetcore-8.0)
+- [Relationships in EF Core](https://docs.microsoft.com/en-us/ef/core/modeling/relationships?tabs=fluent-api%2Cfluent-api-simple-key%2Csimple-key)
+- [One-To-Many Relationship in EF Core](https://www.learnentityframeworkcore.com/configuration/one-to-many-relationship-configuration)
 - GitHub Copilot to generate code snippets.
