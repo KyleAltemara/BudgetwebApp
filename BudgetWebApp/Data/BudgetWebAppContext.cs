@@ -15,6 +15,9 @@ public class BudgetWebAppContext(DbContextOptions<BudgetWebAppContext> options) 
             .WithMany(c => c.Transactions)
             .HasForeignKey(t => t.CategoryId);
 
-        modelBuilder.Entity<Category>().ToTable("Category");
+        modelBuilder.Entity<Category>().ToTable("Category")
+                .HasIndex(c => c.Name)
+                .IsUnique(); // Enforce uniqueness on the Name property
+
     }
 }

@@ -113,10 +113,7 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
 
         if (AddTransaction.CategoryId == -1 && !string.IsNullOrEmpty(NewCategoryName_Add))
         {
-            var newCategory = new Category { Name = NewCategoryName_Add };
-            _context.Categories.Add(newCategory);
-            await _context.SaveChangesAsync();
-            newCategory = await _context.Categories.FirstAsync(c => c.Name == NewCategoryName_Add);
+            Category newCategory = await AddNewCategory(NewCategoryName_Add);
             AddTransaction.CategoryId = newCategory.Id;
         }
 
@@ -145,10 +142,7 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
 
         if (EditTransaction.CategoryId == -1 && !string.IsNullOrEmpty(NewCategoryName_Edit))
         {
-            var newCategory = new Category { Name = NewCategoryName_Edit };
-            _context.Categories.Add(newCategory);
-            await _context.SaveChangesAsync();
-            newCategory = await _context.Categories.FirstAsync(c => c.Name == NewCategoryName_Edit);
+            var newCategory = AddNewCategory(NewCategoryName_Edit);
             EditTransaction.CategoryId = newCategory.Id;
         }
 
@@ -167,5 +161,20 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
         await _context.SaveChangesAsync();
 
         return RedirectToPage();
+    }
+
+    private async Task<Category> AddNewCategory(string name)
+    {
+        var newCategory = await _context.Categories.FirstOrDefaultAsync(c => c.Name == name);
+        if (newCategory != null)
+        {
+            return newCategory;
+        }
+
+        newCategory = new Category { Name = name };
+        _context.Categories.Add(newCategory);
+        await _context.SaveChangesAsync();
+        newCategory = await _context.Categories.FirstAsync(c => c.Name == name);
+        return newCategory;
     }
 }
