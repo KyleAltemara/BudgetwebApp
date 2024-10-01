@@ -35,6 +35,10 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
     [BindProperty(SupportsGet = true)]
     public string? SearchString { get; set; }
 
+
+    [BindProperty(SupportsGet = true)]
+    public int? CategoryFilter { get; set; }
+
     public async Task OnGetAsync()
     {
 
@@ -44,6 +48,11 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
         if (!string.IsNullOrEmpty(SearchString))
         {
             transactions = transactions.Where(s => s.Name.Contains(SearchString));
+        }
+
+        if (CategoryFilter != null)
+        {
+            transactions = transactions.Where(s => s.CategoryId == CategoryFilter);
         }
 
         transactions = SortOrder switch

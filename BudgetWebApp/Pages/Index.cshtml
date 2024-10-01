@@ -7,12 +7,22 @@
 <form method="get">
     <p>
         Search Transactions: <input type="text" name="SearchString" value="@Model.SearchString" />
-        @if (Model.SearchString != null)
+        Genre:
+        <select name="CategoryFilter" asp-for="CategoryFilter">
+            <option value="">All</option>
+            @foreach (var category in Model.Categories)
+            {
+                <option value="@category.Id" selected="@(category.Id == Model.CategoryFilter ? "selected" : null)">@category.Name</option>
+            }
+        </select>
+        <input type="submit" value="Filter" />
+        @if (!string.IsNullOrEmpty(Model.SearchString) || Model.CategoryFilter.HasValue)
         {
-            <a asp-page="./Index">Clear search</a>
+            <a asp-page="./Index">Clear filters</a>
         }
     </p>
 </form>
+
 
 <table class="transactionsTable">
     <thead>
