@@ -4,7 +4,7 @@
     ViewData["Title"] = "Home page";
 }
 
-<form method="get">
+<form method="get" onsubmit="return validateDateRange()">
     <p>
         Search Transactions: <input type="text" name="SearchString" value="@Model.SearchString" />
         Category:
@@ -15,8 +15,8 @@
                 <option value="@category.Id" selected="@(category.Id == Model.CategoryFilter ? "selected" : null)">@category.Name</option>
             }
         </select>
-        Start Date: <input type="date" name="StartDate" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
-        End Date: <input type="date" name="EndDate" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+        Start Date: <input type="date" id="StartDate" name="StartDate" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+        End Date: <input type="date" id="EndDate" name="EndDate" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
         <input type="submit" value="Filter" />
         @if (!string.IsNullOrEmpty(Model.SearchString) || 
             Model.CategoryFilter.HasValue || 
@@ -222,6 +222,18 @@
 
 @section Scripts {
     <script>
+        function validateDateRange() {
+            const startDate = document.getElementById('StartDate').value;
+            const endDate = document.getElementById('EndDate').value;
+
+            if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+                alert("Start Date cannot be after End Date.");
+                return false;
+            }
+
+            return true;
+        }
+
         async function showEditForm(id) {
             const response = await fetch(`/api/Transaction/${id}`);
             if (!response.ok) {
