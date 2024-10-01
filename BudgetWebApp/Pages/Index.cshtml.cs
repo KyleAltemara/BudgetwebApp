@@ -26,15 +26,16 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
     public Transaction EditTransaction { get; set; } = default!;
 
     [BindProperty]
-    public string? NewCategoryName { get; set; }
+    public string? NewCategoryName_Add { get; set; }
+
+    [BindProperty]
+    public string? NewCategoryName_Edit { get; set; }
 
     [BindProperty(SupportsGet = true)]
     public string SortOrder { get; set; } = "date_desc";
 
-
     [BindProperty(SupportsGet = true)]
     public string? SearchString { get; set; }
-
 
     [BindProperty(SupportsGet = true)]
     public int? CategoryFilter { get; set; }
@@ -98,6 +99,7 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
 
     public async Task<IActionResult> OnPostAsync()
     {
+        ModelState.Remove("SortOrder");
         if (Request.Form["_method"] == "PUT")
         {
             return await OnPutAsync();
@@ -109,12 +111,12 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
             return Page();
         }
 
-        if (AddTransaction.CategoryId == -1 && !string.IsNullOrEmpty(NewCategoryName))
+        if (AddTransaction.CategoryId == -1 && !string.IsNullOrEmpty(NewCategoryName_Add))
         {
-            var newCategory = new Category { Name = NewCategoryName };
+            var newCategory = new Category { Name = NewCategoryName_Add };
             _context.Categories.Add(newCategory);
             await _context.SaveChangesAsync();
-            newCategory = await _context.Categories.FirstAsync(c => c.Name == NewCategoryName);
+            newCategory = await _context.Categories.FirstAsync(c => c.Name == NewCategoryName_Add);
             AddTransaction.CategoryId = newCategory.Id;
         }
 
@@ -141,12 +143,12 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
             return Page();
         }
 
-        if (EditTransaction.CategoryId == -1 && !string.IsNullOrEmpty(NewCategoryName))
+        if (EditTransaction.CategoryId == -1 && !string.IsNullOrEmpty(NewCategoryName_Edit))
         {
-            var newCategory = new Category { Name = NewCategoryName };
+            var newCategory = new Category { Name = NewCategoryName_Edit };
             _context.Categories.Add(newCategory);
             await _context.SaveChangesAsync();
-            newCategory = await _context.Categories.FirstAsync(c => c.Name == NewCategoryName);
+            newCategory = await _context.Categories.FirstAsync(c => c.Name == NewCategoryName_Edit);
             EditTransaction.CategoryId = newCategory.Id;
         }
 
