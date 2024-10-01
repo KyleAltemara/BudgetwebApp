@@ -39,6 +39,12 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
     [BindProperty(SupportsGet = true)]
     public int? CategoryFilter { get; set; }
 
+    [BindProperty(SupportsGet = true)]
+    public DateOnly? StartDate { get; set; }
+
+    [BindProperty(SupportsGet = true)]
+    public DateOnly? EndDate { get; set; }
+
     public async Task OnGetAsync()
     {
 
@@ -53,6 +59,16 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
         if (CategoryFilter != null)
         {
             transactions = transactions.Where(s => s.CategoryId == CategoryFilter);
+        }
+
+        if (StartDate != null)
+        {
+            transactions = transactions.Where(s => s.Date >= StartDate);
+        }
+
+        if (EndDate != null)
+        {
+            transactions = transactions.Where(s => s.Date <= EndDate);
         }
 
         transactions = SortOrder switch
