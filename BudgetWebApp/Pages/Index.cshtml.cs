@@ -7,48 +7,90 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BudgetWebApp.Pages;
 
+/// <summary>
+/// Represents the Index page model.
+/// </summary>
 public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger) : PageModel
 {
     private readonly ILogger<IndexModel> _logger = logger;
-
     private readonly BudgetWebAppContext _context = context;
 
+    /// <summary>
+    /// Gets or sets the list of transactions.
+    /// </summary>
     public IList<Transaction> Transactions { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the list of categories.
+    /// </summary>
     public IList<Category> Categories { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the select list of categories.
+    /// </summary>
     public SelectList CategorySelectList { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the transaction to be added.
+    /// </summary>
     [BindProperty]
     public Transaction AddTransaction { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the transaction to be edited.
+    /// </summary>
     [BindProperty]
     public Transaction EditTransaction { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the name of the new category to be added.
+    /// </summary>
     [BindProperty]
     public string? NewCategoryName_Add { get; set; }
 
+    /// <summary>
+    /// Gets or sets the name of the new category to be edited.
+    /// </summary>
     [BindProperty]
     public string? NewCategoryName_Edit { get; set; }
 
+    /// <summary>
+    /// Gets or sets the sort order.
+    /// </summary>
     [BindProperty(SupportsGet = true)]
     public string SortOrder { get; set; } = "date_desc";
 
+    /// <summary>
+    /// Gets or sets the search string.
+    /// </summary>
     [BindProperty(SupportsGet = true)]
     public string? SearchString { get; set; }
 
+    /// <summary>
+    /// Gets or sets the category filter.
+    /// </summary>
     [BindProperty(SupportsGet = true)]
     public int? CategoryFilter { get; set; }
 
+    /// <summary>
+    /// Gets or sets the start date filter.
+    /// </summary>
     [BindProperty(SupportsGet = true)]
     public DateOnly? StartDate { get; set; }
 
+    /// <summary>
+    /// Gets or sets the end date filter.
+    /// </summary>
     [BindProperty(SupportsGet = true)]
     public DateOnly? EndDate { get; set; }
 
+    /// <summary>
+    /// Handles GET requests. 
+    /// Filters and sorts transactions based on user input. 
+    /// Sets the list of transactions and categories.
+    /// </summary>
     public async Task OnGetAsync()
     {
-
         var transactions = from m in _context.Transactions
                            select m;
 
@@ -97,6 +139,9 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
         _logger.LogInformation("Transactions and Categories loaded");
     }
 
+    /// <summary>
+    /// Handles POST requests. Either adds a new transaction or updates an existing transaction. If a new category is created, it is also added to the database.
+    /// </summary>
     public async Task<IActionResult> OnPostAsync()
     {
         ModelState.Remove("SortOrder");
@@ -133,6 +178,9 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
         return RedirectToPage();
     }
 
+    /// <summary>
+    /// Handles PUT requests. Updates an existing transaction. If a new category is created, it is also added to the database.
+    /// </summary>
     public async Task<IActionResult> OnPutAsync()
     {
         if (!ModelState.IsValid)
@@ -163,6 +211,11 @@ public class IndexModel(BudgetWebAppContext context, ILogger<IndexModel> logger)
         return RedirectToPage();
     }
 
+    /// <summary>
+    /// Adds a new category if it does not already exist.
+    /// </summary>
+    /// <param name="name">The name of the new category.</param>
+    /// <returns>The newly added category, or the existing category if it already exists.</returns>
     private async Task<Category> AddNewCategory(string name)
     {
         var newCategory = await _context.Categories.FirstOrDefaultAsync(c => c.Name == name);
